@@ -8,7 +8,7 @@ def create_table_queue():
         try:
             c = db.cursor()
             c.execute(
-                """CREATE TABLE queue_temp (id INTEGER UNIQUE, number INTEGER NOT NULL, name TEXT NOT NULL)""")
+                """CREATE TABLE queue_temp (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL)""")
             db.commit()
             return True
         except Exception as e:
@@ -16,48 +16,59 @@ def create_table_queue():
             return False
 
 
-def add_user(id, number, name):
+def add_user(name):
     with sqlite3.connect(db_file) as db:
         try:
             c = db.cursor()
-            c.execute("""INSERT INTO queue_temp (id, number, name) VALUES (?,?,?)""", (id, number, name,))
+            c.execute("""INSERT INTO queue_temp (name) VALUES (?)""", (name,))
             db.commit()
         except Exception as e:
             print(f"Exception adding user, {e}")
             db.rollback()
 
 
-def del_user():
+def del_user(name):
     with sqlite3.connect(db_file) as db:
         try:
             c = db.cursor()
-            c.execute("""DELETE FROM queue_temp """)
+            c.execute("""DELETE FROM queue_temp WHERE name=?""", name)
             db.commit()
         except Exception as e:
             print(f"Exception del user, {e}")
             db.rollback()
 
 
-def get_name_number():
+def del_all_users():
     with sqlite3.connect(db_file) as db:
         try:
             c = db.cursor()
-            c.execute("""SELECT id, number, name FROM queue_temp ORDER BY number""")
+            c.execute("""DELETE FROM queue_temp""")
+            db.commit()
+        except Exception as e:
+            print(f"Exception del user, {e}")
+            db.rollback()
+
+
+def get_id_name():
+    with sqlite3.connect(db_file) as db:
+        try:
+            c = db.cursor()
+            c.execute("""SELECT id, name FROM queue_temp ORDER BY id""")
             print(c.fetchall())
             return c
         except Exception as e:
             print(f"get_name Exception: {e}")
 
 
-def get_number(id):
-    with sqlite3.connect(db_file) as db:
-        try:
-            c = db.cursor()
-            c.execute("""SELECT number FROM queue_temp WHERE id=?""", id)
-            number = c.fetchone()
-            return number[0]
-        except Exception as e:
-            print(f"get_name Exception: {e}")
+# def get_number(id):
+#     with sqlite3.connect(db_file) as db:
+#         try:
+#             c = db.cursor()
+#             c.execute("""SELECT number FROM queue_temp WHERE id=?""", id)
+#             number = c.fetchone()
+#             return number[0]
+#         except Exception as e:
+#             print(f"get_name Exception: {e}")
 
 
 def get_name(id):
@@ -71,3 +82,8 @@ def get_name(id):
             print(f"get_name Exception: {e}")
 
 
+if __name__ == '__main__':
+    # create_table_queue()
+    del_all_users()
+    # add_user('start')
+    # add_user('temp')
