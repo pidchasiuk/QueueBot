@@ -7,20 +7,16 @@ bot = telebot.TeleBot('1058265955:AAEhi2xia18dZCRuDPnZYB7NE5ZzAFxehtQ')
 def send_queue():
     res = dbq.get_id_name()
     res_message = ''
-    for step in res:
-            temp = '{0} - {1}'.format(res[step][0], res[step][1])
+    for i in res:
+            temp = '{0} - {1}'.format(i[0], i[1])
             res_message += temp + '\n'
     return res_message
 
 
-if __name__ == '__main__':
-    # dbq.get_id_name()
-    send_queue()
-
-
 @bot.message_handler(commands=['start'])
 def start_message(message):
-    dbq.del_all_users()
+    dbq.del_table_queue()
+    dbq.create_table_queue()
     bot.send_message(message.chat.id, 'Давай створимо чергу. \n'
                                       'Щоб зайняти місце натисни /reg \n'
                                       'Коли чергу буде сформовано натисни /end')
@@ -62,4 +58,4 @@ def inform_message(message):
                                       'Щоб видалити себе із черги натисни /del\n'
                                       'Щоб переглянути список натисни /check')
 
-# bot.polling()
+bot.polling()
